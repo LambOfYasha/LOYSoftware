@@ -6,6 +6,7 @@ import { Portfolio } from "./pages/Portfolio";
 import { Store } from "./pages/Store";
 import { Contact } from "./pages/Contact";
 import { Success } from "./pages/Success";
+import { HLAPM } from "./pages/HLAPM";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
       { index: true, Component: Home },
       { path: "about", Component: About },
       { path: "portfolio", Component: Portfolio },
+      { path: "hlapm", Component: HLAPM },
       { path: "store", Component: Store },
       { path: "contact", Component: Contact },
       { path: "success", Component: Success },
