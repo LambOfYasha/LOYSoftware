@@ -7,6 +7,7 @@ import { usePalette } from "../hooks/usePalette";
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
+  { to: "/projects", label: "Projects" },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/store", label: "Store" },
   { to: "/contact", label: "Contact" },
