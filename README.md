@@ -8,4 +8,7 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
-  
+
+## Members prototype
+
+`members/` is the LOY membership portal prototype. It does not replace this marketing site.
