@@ -71,7 +71,8 @@ Host setup that succeeds:
 
 ### Failure signatures
 
-- `Sign-in is not turned on yet` on `/login`: `VITE_AUTH_ENABLED` is `"false"`.
+- `No Next.js version detected` while the install log lists `@mui/material`: that deployment built the repository root, which is the Vite marketing site, with the Vercel framework preset set to Next.js. It is not a member-portal failure. Root `vercel.json` sets `framework` to `vite`. A member deploy is a separate project whose root directory is `members`.
+- `No Next.js version detected` while the install log lists `@tanstack/react-start`: this folder was built with the Next.js preset. The member app is TanStack Start. The framework preset must not be Next.js.
 - Sign-in buttons render but the provider round-trip never completes: `GROK_AUTH_CLIENT_SECRET` is empty. `authConfigured` in `src/lib/auth/server.ts` is false unless both client id and secret are set.
 - `Invalid origin`: `BETTER_AUTH_URL` does not match the page origin, or local traffic used a host other than `localhost`, `127.0.0.1`, or `[::1]` on port 8080.
 - `relation "loy_seats" does not exist` or `relation "loy_memberships" does not exist`: migrate did not run against this database. Check the build log for `[migrate] applied ...` and the `_migrations` table.
@@ -126,17 +127,18 @@ Checkout still does not charge a card. Saving a seat only stores an email. The f
 
 Work down this list. Stop at the first item that matches.
 
-1. **The live domain shows the marketing site, not the member offer.** The host project is building the repository root. Set the root directory to `members` and redeploy.
-2. **The page is blank or the build failed immediately.** Run `npm run build` locally and read the first error. A missing `DATABASE_URL` does not fail the build. A TypeScript or Vite error does.
-3. **Build succeeded but accounts reset on every visit.** `DATABASE_URL` was missing, so the server used a temporary embedded database. Set the Postgres URL and redeploy. You cannot recover the temporary rows.
-4. **Build log never mentions `[migrate]`.** The build command is not `npm run build`. Migrations run at the end of that script.
-5. **Migrate prints an error applying a file.** Leave that file applied-or-not alone. Fix the SQL, but if `_migrations` has no row for it, the transaction rolled back and the next build will retry the same file. Do not edit `0001`, `0002`, or `0003` after they have been applied to production. Add `0004_something.sql`.
-6. **Sign-in says it is not turned on.** Remove `VITE_AUTH_ENABLED`, or set it to `true`, then redeploy. Locally, restart `npm run dev`. Refreshing the page is not enough.
-7. **Google or X opens and then fails, or nothing happens.** The client id or secret is missing or belongs to another host. `BETTER_AUTH_URL` must be the exact origin in the address bar.
-8. **Local sign-in says `Invalid origin`.** Use `http://localhost:8080` or `http://127.0.0.1:8080`, not a LAN hostname, unless you add that origin in `src/lib/auth/server.ts`.
-9. **You are signed in but the seat list shows an error or stays empty after Add.** Open the network call for the seat action. `401` means the session was not sent. A database error in the server log means migrate did not see this database.
-10. **A seat past the first 10 looks unpaid.** That is correct. There is no payment button yet.
-11. **YashaFiness sends you to `/login`.** The studio requires a signed-in member. Wait for the account chip in the header before deciding sign-in failed.
-12. **AI organization does nothing useful.** The app still sorts with rules. AI needs `XAI_API_KEY` and a signed-in caller. It sends file names and sizes, not file contents.
+1. **The build says `No Next.js version detected`.** Read the package list in that same log. `@mui/material` means Vercel built the repository root with the Next.js preset. That site is Vite, and root `vercel.json` sets the framework to Vite. `@tanstack/react-start` means this member app was built with the Next.js preset. Change that project's framework. Do not add the `next` package.
+2. **The live domain shows the marketing site, not the member offer.** The host project is building the repository root. Set the root directory to `members` and redeploy.
+3. **The page is blank or the build failed immediately.** Run `npm run build` locally and read the first error. A missing `DATABASE_URL` does not fail the build. A TypeScript or Vite error does.
+4. **Build succeeded but accounts reset on every visit.** `DATABASE_URL` was missing, so the server used a temporary embedded database. Set the Postgres URL and redeploy. You cannot recover the temporary rows.
+5. **Build log never mentions `[migrate]`.** The build command is not `npm run build`. Migrations run at the end of that script.
+6. **Migrate prints an error applying a file.** Leave that file applied-or-not alone. Fix the SQL, but if `_migrations` has no row for it, the transaction rolled back and the next build will retry the same file. Do not edit `0001`, `0002`, or `0003` after they have been applied to production. Add `0004_something.sql`.
+7. **Sign-in says it is not turned on.** Remove `VITE_AUTH_ENABLED`, or set it to `true`, then redeploy. Locally, restart `npm run dev`. Refreshing the page is not enough.
+8. **Google or X opens and then fails, or nothing happens.** The client id or secret is missing or belongs to another host. `BETTER_AUTH_URL` must be the exact origin in the address bar.
+9. **Local sign-in says `Invalid origin`.** Use `http://localhost:8080` or `http://127.0.0.1:8080`, not a LAN hostname, unless you add that origin in `src/lib/auth/server.ts`.
+10. **You are signed in but the seat list shows an error or stays empty after Add.** Open the network call for the seat action. `401` means the session was not sent. A database error in the server log means migrate did not see this database.
+11. **A seat past the first 10 looks unpaid.** That is correct. There is no payment button yet.
+12. **YashaFiness sends you to `/login`.** The studio requires a signed-in member. Wait for the account chip in the header before deciding sign-in failed.
+13. **AI organization does nothing useful.** The app still sorts with rules. AI needs `XAI_API_KEY` and a signed-in caller. It sends file names and sizes, not file contents.
 
 After a fix, redeploy and read the new build log before testing the domain. Changing an env var without a redeploy leaves the old value in the running build.
