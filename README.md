@@ -20,8 +20,9 @@ The Vercel project `lamb-of-yasha-softwares` is connected to this repo with root
 - `No Next.js version detected` after a log that installs `@mui/material` and `react-router`: the project framework is still Next.js, or `vercel.json` is missing. The install list is the marketing site, not the member portal. Set framework to Vite. Do not add the `next` package to silence it.
 - The same error after a log that installs `@tanstack/react-start`: root directory is `members/` but the framework preset is still Next.js. Use the member portal's own project settings, documented in `members/README.md`.
 - `Could not identify Next.js version` on the line above is the same failure, not a missing TypeScript install.
-- `403 Forbidden` on `https://lambofyeshu.life` while `https://experimental.lambofyeshu.life` returns the marketing page: the name.com document root is empty or the upload left the files inside a `dist` folder. The backup is already correct. Upload the contents of `deploy/loy-namecom.zip` into `public_html`, with `index.html` beside `.htaccess`.
+- `403 Forbidden` on `https://experimental.lambofyeshu.life` after its A record is `169.63.229.130`: the name.com document root is empty, or the upload left the files inside a `dist` folder. Upload the contents of `deploy/loy-namecom.zip` into `public_html`, with `index.html` beside `.htaccess`.
 - `/about` (or another route) 404s or 403s on name.com while `/` works: `.htaccess` was not uploaded. Dotfiles are easy to skip in File Manager.
+- `lambofyeshu.life` still returns the name.com 403 after the Vercel domains were added: DNS was not changed. Nameservers stay at name.com. Only the records below move.
 
 ## Part 2 — For a person running or debugging the site
 
@@ -47,30 +48,35 @@ The project that failed on commit `3468d91` is `lamb-of-yasha-softwares`. It mus
 
 The member portal is not this deployment. Its steps are in `members/README.md`.
 
-### Name.com hosting, with experimental as the backup
+### Hosts after the swap
 
-Two hosts. Do not put both jobs on the name.com server.
+Vercel is the main host. Name.com is only the static experimental copy. DNS is still at name.com (`ns1djs.name.com` and the other `ns*.name.com` servers). Do not change the nameservers.
 
-| Role | Where | What it serves now |
-| --- | --- | --- |
-| Primary | Name.com hosting. `lambofyeshu.life` and `www` resolve to `169.63.229.130`. | 403. The document root has no site files. |
-| Backup | Vercel project `lamb-of-yasha-softwares`. | `https://experimental.lambofyeshu.life` already returns the Vite marketing site. The domain is verified on that project. |
+The Vercel project `lamb-of-yasha-softwares` already has these domains, all verified:
 
-The backup is a different machine. Do not point `experimental` at `169.63.229.130`. If name.com is down, that record would go down with it.
+| Domain | Role |
+| --- | --- |
+| `lambofyeshu.life` | Main marketing site |
+| `www.lambofyeshu.life` | 308 redirect to the apex |
+| `experimental.lambofyeshu.life` | Still attached, so the current site stays up until DNS moves |
 
-Only the marketing site is packed for name.com. From the repository root:
+Until the records below are saved, the apex and `www` still answer `169.63.229.130` with a 403, and `experimental` still answers Vercel.
+
+In name.com DNS for `lambofyeshu.life`:
+
+| Host | Change |
+| --- | --- |
+| `@` | Replace the A record `169.63.229.130` with the A value shown on the Vercel domain card for `lambofyeshu.life`. Do not copy an IP resolved from the experimental CNAME. |
+| `www` | Delete the A record `169.63.229.130`. Add a CNAME to `65a863b71d38a490.vercel-dns-017.com`. That is the target experimental already uses. |
+| `experimental` | Delete the CNAME to Vercel. Add an A record to `169.63.229.130`. |
+
+Do `experimental` last. It will 403 until the zip is in `public_html`. The member portal is not in that zip.
 
 ```bash
 pnpm run pack:namecom
 ```
 
-That writes `deploy/loy-namecom.zip`. The zip root is `index.html`, `assets/`, and `.htaccess`. In cPanel File Manager, open the primary domain's document root (`public_html` unless the dashboard says otherwise) and upload those files there. Do not upload a folder named `dist`, and do not upload `members/` or `node_modules`. Name.com shared hosting does not run the member portal.
-
-`.htaccess` is required. The site uses real paths (`/about`, `/projects`, `/portfolio`, `/hlapm`, `/store`, `/contact`, `/success`). Without the rewrite, opening one of those links directly returns 403 or 404 even when the home page works.
-
-Leave the apex A record on the IP shown in the name.com hosting dashboard. Do not replace it with a guessed address. Leave `experimental` on its current Vercel CNAME.
-
-The built page still contains `noindex, nofollow`. Putting it on name.com does not submit it to search.
+Upload the files inside `deploy/loy-namecom.zip` into `public_html` so `index.html` and `.htaccess` are in the document root. `.htaccess` is what makes `/about`, `/projects`, `/portfolio`, `/hlapm`, `/store`, `/contact`, and `/success` work on name.com. The built page still has `noindex, nofollow`.
 
 ### When the build says Next.js is missing
 
