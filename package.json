@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "pack:namecom": "node scripts/pack-namecom.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

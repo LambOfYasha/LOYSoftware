@@ -1,0 +1,10 @@
+# Name.com cPanel. The marketing site uses browser paths (/about, /store, …).
+# A missing file must return index.html, or those paths 403 or 404.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
