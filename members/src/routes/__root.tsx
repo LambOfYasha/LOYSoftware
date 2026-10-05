@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "LOY Membership is a one-time library pass from Lamb of Yeshu Software. YashaFiness is included. Later apps are added here.",
+          "LOY Membership is a one-time library pass from Lamb of Yeshu Software. Later apps are added here. YashaFiness is a separate local app.",
       },
       { name: "theme-color", content: "#f3f6f4" },
     ],

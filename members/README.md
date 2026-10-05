@@ -22,13 +22,12 @@ Read this part before editing. The human section below is the same system in ope
 
 ### What this app is
 
-TanStack Start (Vite, React, Nitro) member portal. It is not YashaFiness. YashaFiness is the local photo viewer and file organizer in `LambOfYasha/YashaFiness`. This prototype still mounts a browser copy of an organizer at `/studio`. That copy is not the YashaFiness repo and must not grow membership rules.
+TanStack Start (Vite, React, Nitro) member portal. It is not YashaFiness. YashaFiness is the local photo viewer and file organizer in `LambOfYasha/YashaFiness`. This site does not mount that app.
 
 | Path | File | Behavior |
 | --- | --- | --- |
 | `/` | `src/routes/index.tsx` | Offer, price, seat list |
 | `/login` | `src/routes/login.tsx` | Google and X only. No email/password. |
-| `/studio` | `src/routes/studio.tsx` | Copied browser organizer. Not the YashaFiness product. Signed-in only in this prototype. |
 | `/api/auth/*` | `src/routes/api/auth/$.ts` | Better Auth. Do not add `src/routes/auth/popup.tsx`. |
 
 Seat and price constants are in `src/lib/loy/catalog.ts`. Seat writes are in `src/lib/loy/membership.functions.ts`. Schema is only in `migrations/*.sql`.
@@ -38,7 +37,7 @@ Seat and price constants are in `src/lib/loy/catalog.ts`. Seat writes are in `sr
 - The buyer pays $79 once and receives 10 extra memberships. Membership number 11 and later cost $25 once. Do not describe the first 10 as $25 each.
 - `loy_seats.kind = 'included'` for the first 10 rows of an owner. Later rows are `kind = 'extra'` and are not active until paid. No code path marks an extra seat paid, because checkout is not implemented.
 - Nothing inserts into `loy_memberships`. An included seat does not grant access until that owner has a row with `status = 'active'`.
-- Do not upload member files. The copied organizer stays in the browser except for an optional AI call. Do not treat `/studio` as the YashaFiness repo.
+- Do not upload member files. Do not add `/studio` or copy the YashaFiness organizer back into this folder.
 - `src/lib/auth/server.ts` is wired auth. Do not rewrite it. `src/lib/auth/preview.ts` ships with an empty `PREVIEW_CLIENT_SECRET` on purpose. Do not paste a secret back into git.
 - Start Vite only through `npm run dev`, `npm run build`, or `npm run preview`. Those scripts run `scripts/with-app-env.mjs`. A direct `vite` process will disagree with the next build about `VITE_AUTH_ENABLED`.
 - Absence of `VITE_AUTH_ENABLED` means sign-in is on. The string `"false"` turns it off. Restart after any change. Hot reload does not pick up env.
@@ -57,9 +56,8 @@ Set these on the host that serves the public URL. Do not commit them.
 | `GROK_AUTH_CLIENT_SECRET` | Yes, for Google/X | Matching client secret. The git tree has no fallback secret. |
 | `GROK_AUTH_ISSUER` | No | Defaults to `https://auth.grok.me`. |
 | `VITE_AUTH_ENABLED` | No | Leave unset, or set `true`. Set `false` only to force the logged-out dev user. |
-| `XAI_API_KEY` | No | Optional AI for the copied organizer at `/studio`. Rules still run when it is missing. The YashaFiness repo reads the same variable on its own process. |
 
-`vercel.json` installs with `npm install --omit=dev`. Vite, Nitro, and TypeScript are production dependencies, so that install can still build. Node 22.
+`vercel.json` installs with `npm install --omit=dev`. Vite, Nitro, and TypeScript are production dependencies, so that install can still build. `@tanstack/react-start` is pinned to `~1.168.60`. Node 22.
 
 Host setup that succeeds:
 
@@ -79,7 +77,6 @@ Host setup that succeeds:
 - `[migrate] DATABASE_URL not set — skipping`: expected only for a local build. A production build that prints this did not receive the database URL.
 - `ENOENT` for `pglite.data` or `pglite.wasm`: production tried embedded Postgres. Set `DATABASE_URL` instead of copying those files in.
 - Seat form shows `That seat could not be saved`: request was unauthenticated, or the table is missing. Confirm a session, then the migration log.
-- AI in the copied organizer says it is unavailable: `XAI_API_KEY` is unset, or the caller is signed out (`401` from `authMiddleware`). The YashaFiness repo does not use that middleware.
 - `[auth-invariant] dev server has sign-in off but the next build has it on`: stop the process and start again with `npm run dev`.
 
 Do not "fix" these by mocking a paid membership or by committing secrets.
@@ -137,8 +134,6 @@ Work down this list. Stop at the first item that matches.
 8. **Google or X opens and then fails, or nothing happens.** The client id or secret is missing or belongs to another host. `BETTER_AUTH_URL` must be the exact origin in the address bar.
 9. **Local sign-in says `Invalid origin`.** Use `http://localhost:8080` or `http://127.0.0.1:8080`, not a LAN hostname, unless you add that origin in `src/lib/auth/server.ts`.
 10. **You are signed in but the seat list shows an error or stays empty after Add.** Open the network call for the seat action. `401` means the session was not sent. A database error in the server log means migrate did not see this database.
-11. **A seat past the first 10 looks unpaid.** That is correct. There is no payment button yet.
-12. **`/studio` sends you to `/login`.** This prototype requires a signed-in member before the copied organizer. That gate is not part of YashaFiness. Wait for the account chip in the header before deciding sign-in failed.
-13. **AI organization does nothing useful.** The copied organizer still sorts with rules. AI needs `XAI_API_KEY` and a signed-in caller. It sends file names and sizes, not file contents.
+11. **A seat past the first 10 looks unpaid.** That is correct. Checkout is not connected, so no code path marks an extra seat paid.
 
 After a fix, redeploy and read the new build log before testing the domain. Changing an env var without a redeploy leaves the old value in the running build.

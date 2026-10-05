@@ -93,7 +93,7 @@ export function MembersHome() {
             <p className="text-sm font-medium tracking-wide text-brass">LOY Software</p>
             <h1 className="mt-2 font-display text-4xl text-fg md:text-5xl">One membership. The whole library.</h1>
             <p className="mt-4 max-w-xl text-lg text-muted">
-              Pay once. Use YashaFiness now, and the LOY apps that follow. Bring {MEMBERSHIP.includedExtraSeats} other people with you. This is the home that will live at {MEMBERS_HOST}.
+              Pay once. This site is the library. YashaFiness is the separate local app. Bring {MEMBERSHIP.includedExtraSeats} other people with you. This is the home that will live at {MEMBERS_HOST}.
             </p>
           </div>
           <aside className="rounded-2xl border border-line bg-surface p-5">
@@ -192,13 +192,8 @@ export function MembersHome() {
                   </span>
                 </div>
                 <p className="text-sm text-muted">{product.summary}</p>
-                {product.openTo === "/studio" ? (
-                  <Link
-                    to="/studio"
-                    className="mt-auto inline-flex min-h-11 w-fit items-center rounded-full bg-brass px-4 text-sm font-medium text-brass-ink"
-                  >
-                    Open YashaFiness
-                  </Link>
+                {product.status === "included" ? (
+                  <p className="mt-auto text-sm text-muted">Separate app. It runs on your computer, not in this portal.</p>
                 ) : (
                   <p className="mt-auto text-sm text-muted">Listed here when it ships.</p>
                 )}
@@ -216,7 +211,7 @@ export function MembersHome() {
           </div>
           <div>
             <h2 className="font-medium text-fg">What it does not do</h2>
-            <p className="mt-2 text-sm text-muted">It does not upload your folders. YashaFiness sorts locally. AI runs only when you ask, and only on names and sizes.</p>
+            <p className="mt-2 text-sm text-muted">It does not upload your folders. The local organizer is YashaFiness, and it does not run on this site.</p>
           </div>
           <div>
             <h2 className="font-medium text-fg">Public site</h2>

@@ -76,7 +76,7 @@ Do `experimental` last. It will 403 until the zip is in `public_html`. The membe
 pnpm run pack:namecom
 ```
 
-Upload the files inside `deploy/loy-namecom.zip` into `public_html` so `index.html` and `.htaccess` are in the document root. `.htaccess` is what makes `/about`, `/projects`, `/portfolio`, `/hlapm`, `/store`, `/contact`, and `/success` work on name.com. The built page still has `noindex, nofollow`.
+Upload the files inside `deploy/loy-namecom.zip` into `public_html` so `index.html` and `.htaccess` are in the document root. `.htaccess` is what makes `/about`, `/projects`, `/portfolio`, `/hlapm`, `/store`, `/contact`, and `/success` work on name.com. The marketing page no longer sends `noindex`.
 
 ### When the build says Next.js is missing
 

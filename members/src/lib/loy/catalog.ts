@@ -25,8 +25,7 @@ export const PRODUCTS: Product[] = [
     id: "yashafiness",
     name: "YashaFiness",
     status: "included",
-    summary: "File organizer and image viewer. Rules and optional AI stay on your machine. Share a gallery as one page you can host.",
-    openTo: "/studio",
+    summary: "Separate local photo viewer and file organizer. It is not opened from this site.",
   },
   {
     id: "library",
