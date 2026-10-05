@@ -49,7 +49,7 @@ Set these on the host that serves the public URL. Do not commit them.
 
 | Variable | Required | Role |
 | --- | --- | --- |
-| `DATABASE_URL` | Yes, for a real deploy | Postgres connection string. Build runs `npm run db:migrate` against it. Without it, the server falls back to embedded PGLite, which is not durable on a serverless host. |
+| `DATABASE_URL` | Yes, for a real deploy | Postgres connection string. On localhost, `/keys` can store it in `.secrets.local.json`. That page is refused on a public host. A host value wins over the file. Restart after a paste. Do not commit the file. |
 | `BETTER_AUTH_SECRET` | Yes | Long random secret. Sessions break if it changes. |
 | `BETTER_AUTH_URL` | Yes, on a custom domain | Public origin only, for example `https://members.lambofyeshu.life`. No path, no trailing slash. Must match the browser origin. |
 | `GROK_AUTH_CLIENT_ID` | Yes, for Google/X | OAuth client id for the broker at `https://auth.grok.me`. |
@@ -78,6 +78,7 @@ Host setup that succeeds:
 - `ENOENT` for `pglite.data` or `pglite.wasm`: production tried embedded Postgres. Set `DATABASE_URL` instead of copying those files in.
 - Seat form shows `That seat could not be saved`: request was unauthenticated, or the table is missing. Confirm a session, then the migration log.
 - `notFoundError was encountered on the route with ID "__root__"`: an address matched no route, often `/favicon.ico` or a removed path such as `/studio`. `defaultNotFoundComponent` in `src/router.tsx` is the page for that. Do not add the missing path back unless it is a real route. `public/favicon.ico` must stay so the browser does not send `/favicon.ico` through the router.
+- `Keys can only be saved on this machine or in the private preview.`: `/keys` was opened on a public host. Set the variables in the host dashboard instead. Do not remove that check.
 - `[auth-invariant] dev server has sign-in off but the next build has it on`: stop the process and start again with `npm run dev`.
 
 Do not "fix" these by mocking a paid membership or by committing secrets.

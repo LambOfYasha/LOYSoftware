@@ -73,6 +73,9 @@ export function MembersHome() {
             Lamb of Yeshu
           </Link>
           <p className="hidden text-sm text-muted sm:block">Members</p>
+          <Link to="/keys" className="text-sm text-brass">
+            Keys
+          </Link>
           <div className="ml-auto flex items-center gap-2">
             {isPending ? <span className="size-8 animate-pulse rounded-full bg-raised" /> : null}
             <SignedOut>

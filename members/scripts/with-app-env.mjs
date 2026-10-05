@@ -65,6 +65,41 @@ export function mergeAppEnv(appEnv, processEnv) {
   return { ...appEnv, ...processEnv };
 }
 
+/** Local pasted keys. A real process.env entry always wins. Values are never logged. */
+export const LOCAL_SECRETS_FILE = ".secrets.local.json";
+const LOCAL_SECRET_KEYS = new Set([
+  "DATABASE_URL",
+  "BETTER_AUTH_SECRET",
+  "BETTER_AUTH_URL",
+  "GROK_AUTH_CLIENT_ID",
+  "GROK_AUTH_CLIENT_SECRET",
+  "GROK_AUTH_ISSUER",
+]);
+
+export function readLocalSecrets(root) {
+  try {
+    const parsed = JSON.parse(readFileSync(join(root, LOCAL_SECRETS_FILE), "utf8"));
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    const secrets = {};
+    for (const [key, value] of Object.entries(parsed)) {
+      if (!LOCAL_SECRET_KEYS.has(key) || typeof value !== "string") continue;
+      const trimmed = value.trim();
+      if (trimmed) secrets[key] = trimmed;
+    }
+    return secrets;
+  } catch {
+    return {};
+  }
+}
+
+export function applyLocalSecrets(env, secrets) {
+  const next = { ...env };
+  for (const [key, value] of Object.entries(secrets)) {
+    if (!next[key]?.trim()) next[key] = value;
+  }
+  return next;
+}
+
 /**
  * Translate a child's `exit` `(code, signal)` into this process's exit status.
  *
@@ -110,7 +145,10 @@ function main(argv) {
     console.error("usage: node scripts/with-app-env.mjs <command> [args…]");
     process.exit(2);
   }
-  const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
+  const env = applyLocalSecrets(
+    mergeAppEnv(readAppEnv(projectRoot()), process.env),
+    readLocalSecrets(projectRoot()),
+  );
   const child = spawn(command, args, { stdio: "inherit", env });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
