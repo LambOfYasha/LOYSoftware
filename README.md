@@ -22,7 +22,8 @@ The Vercel project `lamb-of-yasha-softwares` is connected to this repo with root
 - `Could not identify Next.js version` on the line above is the same failure, not a missing TypeScript install.
 - `403 Forbidden` on `https://experimental.lambofyeshu.life` after its A record is `169.63.229.130`: the name.com document root is empty, or the upload left the files inside a `dist` folder. Upload the contents of `deploy/loy-namecom.zip` into `public_html`, with `index.html` beside `.htaccess`.
 - `/about` (or another route) 404s or 403s on name.com while `/` works: `.htaccess` was not uploaded. Dotfiles are easy to skip in File Manager.
-- `lambofyeshu.life` still returns the name.com 403 after the Vercel domains were added: DNS was not changed. Nameservers stay at name.com. Only the records below move.
+- `Cannot find name 'process'` in `api/contact.ts` or `api/create-checkout-session.ts`: `@types/node` is not installed. These files are Vercel Node functions, not Vite browser code. Add `@types/node`. Do not remove `process.env`.
+- `Type '"2025-06-30.basil"' is not assignable to type '"2026-07-29.dahlia"'`: the checkout file pinned an old Stripe API version. The installed `stripe` package only accepts its own `LatestApiVersion`. Leave `apiVersion` unset so the SDK uses that version. Do not downgrade Stripe to keep the old string.
 
 ## Part 2 — For a person running or debugging the site
 
