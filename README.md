@@ -1,6 +1,6 @@
 # Lamb of Yeshu Software
 
-The repository root is the public marketing site (Vite + React). It is not a Next.js app. The member portal is a separate app in [`members/`](members/README.md).
+The repository root is the public marketing site (Vite + React). It is not a Next.js app. The member portal is a separate app in [`members/`](members/README.md). YashaFiness, the local photo viewer and file organizer, is a different repository.
 
 ## Part 1 — For an AI working in this repo
 
