@@ -77,6 +77,7 @@ Host setup that succeeds:
 - `[migrate] DATABASE_URL not set — skipping`: expected only for a local build. A production build that prints this did not receive the database URL.
 - `ENOENT` for `pglite.data` or `pglite.wasm`: production tried embedded Postgres. Set `DATABASE_URL` instead of copying those files in.
 - Seat form shows `That seat could not be saved`: request was unauthenticated, or the table is missing. Confirm a session, then the migration log.
+- `notFoundError was encountered on the route with ID "__root__"`: an address matched no route, often `/favicon.ico` or a removed path such as `/studio`. `defaultNotFoundComponent` in `src/router.tsx` is the page for that. Do not add the missing path back unless it is a real route. `public/favicon.ico` must stay so the browser does not send `/favicon.ico` through the router.
 - `[auth-invariant] dev server has sign-in off but the next build has it on`: stop the process and start again with `npm run dev`.
 
 Do not "fix" these by mocking a paid membership or by committing secrets.
