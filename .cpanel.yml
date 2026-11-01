@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/ezlight777@gmail.com/public_html/
+    - /bin/cp -R . $DEPLOYPATH  
